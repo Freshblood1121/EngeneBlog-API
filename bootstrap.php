@@ -33,19 +33,21 @@ $container->bind(
 $container->bind(
     LoggerInterface::class,
     (new Logger('blog'))
-        ->pushHandler(new StreamHandler(
-            __DIR__ . '/logs/blog.log'
-        ))
-// Добавили новый обработчик:
-        ->pushHandler(new StreamHandler(
-// записывать в файл "blog.error.log"
-            __DIR__ . '/logs/blog.error.log',
-// события с уровнем ERROR и выше,
-            level: Logger::ERROR,
-// при этом событие не должно "всплывать"
-            bubble: false,
-        ))
-);
-
+        ->pushHandler(
+            new StreamHandler(
+                __DIR__ . '/logs/blog.log'
+            ))
+        // Добавили новый обработчик:
+        ->pushHandler(
+            new StreamHandler(
+            // записывать в файл "blog.error.log"
+                __DIR__ . '/logs/error.log',
+                // события с уровнем ERROR и выше,
+                level: Logger::ERROR,
+                // при этом событие не должно "всплывать"
+                bubble: false,
+            ))
+        // .. и вести запись в поток php://stdout, то есть в консоль
+        ->pushHandler(new StreamHandler("php://stdout")));
 // Возвращаем объект контейнера
 return $container;
