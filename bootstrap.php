@@ -1,7 +1,12 @@
 <?php
 
 // Подключаем автозагрузчик Composer
+
 use Dotenv\Dotenv;
+use Faker\Provider\Lorem;
+use Faker\Provider\ru_RU\Internet;
+use Faker\Provider\ru_RU\Person;
+use Faker\Provider\ru_RU\Text;
 use GeekBrains\LevelTwo\Blog\Container\DIContainer;
 use GeekBrains\LevelTwo\Blog\Repositories\AuthTokensRepository\AuthTokensRepositoryInterface;
 use GeekBrains\LevelTwo\Blog\Repositories\AuthTokensRepository\SqliteAuthTokensRepository;
@@ -16,6 +21,7 @@ use GeekBrains\LevelTwo\Http\Auth\TokenAuthenticationInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
+use Faker\Generator;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -75,6 +81,18 @@ if ('yes' === $_SERVER['LOG_TO_CONSOLE'])
 }
 
 $container->bind(LoggerInterface::class, $logger);
+
+// Создаём объект генератора тестовых данных
+$faker = new Generator();
+
+// Инициализируем необходимые нам виды данных
+$faker->addProvider(new Person($faker));
+$faker->addProvider(new Text($faker));
+$faker->addProvider(new Internet($faker));
+$faker->addProvider(new Lorem($faker));
+
+// Добавляем генератор тестовых данных в контейнер внедрения зависимостей
+$container->bind(Generator::class, $faker);
 
 // Возвращаем объект контейнера
 return $container;
