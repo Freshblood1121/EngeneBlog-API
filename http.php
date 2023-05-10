@@ -1,6 +1,8 @@
 <?php
 
 use GeekBrains\LevelTwo\Blog\Exceptions\AppException;
+use GeekBrains\LevelTwo\Http\Actions\Auth\LogIn;
+use GeekBrains\LevelTwo\Http\Actions\Posts\CreatePost;
 use GeekBrains\LevelTwo\Http\Actions\Users\CreateUser;
 use GeekBrains\LevelTwo\Http\Actions\Users\FindByUsername;
 use GeekBrains\LevelTwo\Http\ErrorResponse;
@@ -44,6 +46,8 @@ $routes = [
     ],
     'POST' => [
         '/users/create' => CreateUser::class,
+        '/posts/create' => CreatePost::class,
+        '/login' => LogIn::class,
     ],
 ];
 if (!array_key_exists($method, $routes)

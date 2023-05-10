@@ -3,7 +3,6 @@
 namespace GeekBrains\LevelTwo\Blog\Commands;
 
 use GeekBrains\LevelTwo\Blog\Exceptions\ArgumentsException;
-use GeekBrains\LevelTwo\Blog\Exceptions\CommandException;
 use GeekBrains\LevelTwo\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\LevelTwo\Blog\Exceptions\UserNotFoundException;
 use GeekBrains\LevelTwo\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
@@ -29,7 +28,6 @@ class CreateUserCommand
         $this->usersRepository = $usersRepository;
     }
     /**
-     * @throws CommandException
      * @throws InvalidArgumentException|ArgumentsException
      */
     public function handle(Arguments $arguments): void
@@ -46,22 +44,20 @@ class CreateUserCommand
             // Вместо выбрасывания исключения просто выходим из функции
             return;
         }
-
-        $uuid = UUID::random();
-
-        // Сохраняем пользователя в репозиторий
-        $this->usersRepository->save(
-            new User(
-                $uuid,
-                new Name(
-                    $arguments->get('first_name'),
-                    $arguments->get('last_name')
-                ),
-                $username,
+        // Создаём объект пользователя
+        // Функция createFrom сама создаст UUID
+        // и захеширует пароль
+        $user = User::createFrom(
+            $username,
+            $arguments->get('password'),
+            new Name(
+                $arguments->get('first_name'),
+                $arguments->get('last_name')
             )
         );
+
         // Логируем информацию о новом пользователе
-        $this->logger->info("User created: $uuid");
+        $this->logger->info("User created: " . $user->uuid());
     }
 
     private function userExists(string $username): bool
